@@ -1,18 +1,19 @@
-﻿using ScreenSound.Modelos;
+﻿using ScreenSound.Models;
+using ScreenSound.Banco;
 
 namespace ScreenSound.Menus;
 
 internal class Menu
 {
-    public void ExibirTituloDaOpcao(string titulo)
+    public void ShowOptionTitle(string title)
     {
-        int quantidadeDeLetras = titulo.Length;
-        string asteriscos = string.Empty.PadLeft(quantidadeDeLetras, '*');
-        Console.WriteLine(asteriscos);
-        Console.WriteLine(titulo);
-        Console.WriteLine(asteriscos + "\n");
+        int numberOfLeters = title.Length;
+        string asterisk = string.Empty.PadLeft(numberOfLeters, '*');
+        Console.WriteLine(asterisk);
+        Console.WriteLine(title);
+        Console.WriteLine(asterisk + "\n");
     }
-    public virtual void Executar(Dictionary<string, Artista> nusicasRegistradas)
+    public virtual void Execute(IRepository<Artist> artistRepository)
     {
         Console.Clear();
     }
