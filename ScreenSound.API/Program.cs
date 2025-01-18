@@ -29,6 +29,7 @@ public class Program
 
         ArtistsEndpoints.Add(app);
         MusicsEndpoints.Add(app);
+        GenresEndpoints.Add(app);
 
         app.UseSwagger();
         app.UseSwaggerUI();

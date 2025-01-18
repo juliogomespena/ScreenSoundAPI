@@ -56,7 +56,7 @@ public static class MusicsEndpoints
 
             var genres = new List<Genre>();
 
-            if(musicPostModel.Genres is not null)
+            if (musicPostModel.Genres is not null)
                 genres = DetermineGenresToBeUpdated(musicPostModel.Genres, genreRepository);
 
             var music = new Music(musicPostModel.Name, musicPostModel.ArtistId, musicPostModel.ReleaseYear)
