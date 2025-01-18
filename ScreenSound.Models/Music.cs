@@ -2,7 +2,6 @@
 
 namespace ScreenSound.Models;
 
-[JsonSerializable(typeof(Artist))]
 public class Music(string name, int artistId, int? releaseYear = null)
 {
     public int Id { get; set; }
@@ -10,6 +9,7 @@ public class Music(string name, int artistId, int? releaseYear = null)
     public int? ReleaseYear { get; set; } = releaseYear;
     public int ArtistId { get; set; } = artistId;
     public virtual Artist Artist { get; set; } = null!;
+    public virtual ICollection<Genre>? Genres { get; set; }
 
     public void ShowInfo() => Console.WriteLine($"Name: {Name}");
       

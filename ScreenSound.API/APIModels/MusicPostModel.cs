@@ -8,5 +8,6 @@ public record MusicPostModel
 (
     string Name,
     int ReleaseYear,
-    int ArtistId
+    int ArtistId,
+    List<string>? Genres = null
 );

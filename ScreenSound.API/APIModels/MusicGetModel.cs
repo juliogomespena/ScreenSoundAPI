@@ -10,5 +10,6 @@ public record MusicGetModel
     string? Name = null,
     int? ReleaseYear = null,
     int? ArtistId = null,
-    string? ArtistName = null
+    string? ArtistName = null,
+    List<string>? Genres = null
 );

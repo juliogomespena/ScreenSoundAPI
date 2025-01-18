@@ -9,5 +9,6 @@ public record MusicPutModel
     int Id,
     int ArtistId,
     string? Name = null,
-    int? ReleaseYear = null
+    int? ReleaseYear = null,
+    List<string>? Genres = null
 );

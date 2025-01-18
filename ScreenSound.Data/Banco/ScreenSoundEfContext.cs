@@ -16,6 +16,15 @@ public class ScreenSoundEfContext : DbContext
 
     public DbSet<Music> Music { get; set; }
 
+    public DbSet<Genre> Genre { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Genre>()
+            .HasMany(m => m.Musics)
+            .WithMany(g => g.Genres);
+    }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder

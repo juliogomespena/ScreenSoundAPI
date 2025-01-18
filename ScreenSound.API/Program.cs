@@ -14,6 +14,7 @@ public class Program
         builder.Services.AddDbContext<ScreenSoundEfContext>();
         builder.Services.AddScoped<IRepository<Artist>, Repository<Artist>>();
         builder.Services.AddScoped<IRepository<Music>, Repository<Music>>();
+        builder.Services.AddScoped<IRepository<Genre>, Repository<Genre>>();
 
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
