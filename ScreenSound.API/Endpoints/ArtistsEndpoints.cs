@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ScreenSound.API.APIModels;
 using ScreenSound.Banco;
-using ScreenSound.Models;
+using ScreenSound.Models.Models;
 
 namespace ScreenSound.API.Endpoints;
 

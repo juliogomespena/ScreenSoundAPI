@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using ScreenSound.Models;
+using ScreenSound.Models.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +10,12 @@ namespace ScreenSound.Banco;
 
 public class ScreenSoundEfContext : DbContext
 {
+    public ScreenSoundEfContext(DbContextOptions options) : base(options) { }
+
+    public ScreenSoundEfContext()
+    {
+    }
+
     private readonly string _dbConnectionString = "Data Source = (localdb)\\MSSQLLocalDB; Initial Catalog = ScreenSound-EFv2; Integrated Security = True; Encrypt = False; Trust Server Certificate = False; Application Intent = ReadWrite; Multi Subnet Failover = false";
 
     public DbSet<Artist> Artist { get; set; }
@@ -27,6 +33,9 @@ public class ScreenSoundEfContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
+        if (optionsBuilder.IsConfigured)
+            return;
+
         optionsBuilder
             .UseSqlServer(_dbConnectionString)
             .UseLazyLoadingProxies();

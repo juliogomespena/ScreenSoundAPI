@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace ScreenSound.Models;
+namespace ScreenSound.Models.Models;
 
 public class Music(string name, int artistId, int? releaseYear = null)
 {
@@ -12,6 +12,6 @@ public class Music(string name, int artistId, int? releaseYear = null)
     public virtual ICollection<Genre>? Genres { get; set; }
 
     public void ShowInfo() => Console.WriteLine($"Name: {Name}");
-      
+
     public override string ToString() => $"Id: {Id}\nName: {Name}";
 }

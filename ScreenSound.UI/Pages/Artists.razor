@@ -1,0 +1,59 @@
+﻿@page "/artists"
+@inject IArtistaService artistaService
+
+<MudText Typo="Typo.h3">Artists</MudText>
+<MudDivider Class="pb-4"/>
+
+@if (artists is null)
+{
+	<MudGrid>
+		<MudItem xs="12" Class="pa-10">
+			<MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
+		</MudItem>
+	</MudGrid>
+}
+else if (artists.Count == 0)
+{
+	<MudText Class="pa-2 Typo="Typo.h6">No artists found.</MudText>
+}
+else
+{
+	<MudGrid>
+		@foreach (var artist in artists)
+		{
+			<MudItem xs="12" sm="6" md="4" lg="3">
+				<MudCard Class="fixed-card">
+					<MudCardMedia Image="images/artistprofilepicture/images.jpg" Height="200" />
+					<MudCardContent>
+						<MudGrid>
+							<MudItem xs="12">
+								<MudText Typo="Typo.h5" Class="pb-2">
+									@artist.Name <MudIconButton Icon="@Icons.Material.Filled.Settings" Href="@($"/artists/update/{artist.Name}")"/>
+								</MudText>
+								<MudText Typo="Typo.body2" Class="artist-bio-text">@artist.Bio</MudText>
+							</MudItem>
+						</MudGrid>
+					</MudCardContent>
+				</MudCard>
+			</MudItem>
+		}
+	</MudGrid>
+}
+
+@code
+{
+	private ICollection<ArtistGetModel>? artists;
+
+	protected override async Task OnInitializedAsync()
+	{
+		try
+		{
+			artists = await artistaService.ListAllArtistsAsync();
+		}
+		catch (Exception ex)
+		{
+			artists = new List<ArtistGetModel>();
+			Console.WriteLine(ex.Message);
+		}
+	}
+}

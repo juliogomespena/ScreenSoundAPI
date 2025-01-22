@@ -1,6 +1,6 @@
 ﻿using ScreenSound.Banco;
 using ScreenSound.Menus;
-using ScreenSound.Models;
+using ScreenSound.Models.Models;
 
 internal class Program
 {

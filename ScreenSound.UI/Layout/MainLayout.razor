@@ -1,0 +1,78 @@
+﻿@inherits LayoutComponentBase
+
+<MudThemeProvider Theme="Theme" IsDarkMode="true" />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+	<MudAppBar Color="Color.Primary">
+		<MudIconButton Icon="@menuIcon" Color="Color.Inherit" Edge="Edge.Start" @onclick="MenuToggle" />
+		<MudText Typo="Typo.h6">Screensound</MudText>
+	</MudAppBar>
+
+	<MudDrawer @bind-Open="@IsMenuOpen">
+		<NavMenu />
+	</MudDrawer>
+
+	<MudMainContent>
+		<MudPaper Class="px-4 pt-2 pb-3 ma-4" Square="true">
+			@Body
+		</MudPaper>
+	</MudMainContent>
+
+</MudLayout>
+
+@code
+{
+	private bool _isMenuOpen = true;
+	private string menuIcon = Icons.Material.Rounded.ArrowBack;
+
+	private bool IsMenuOpen 
+	{
+		get => _isMenuOpen;
+		set
+		{
+			if(_isMenuOpen != value)
+			{
+				_isMenuOpen = value;
+				UpdateMenuIcon();
+			}
+		}
+	}
+
+	void MenuToggle()
+	{
+		_isMenuOpen = !_isMenuOpen;
+		UpdateMenuIcon();
+	}
+
+	void UpdateMenuIcon() => menuIcon = IsMenuOpen ? Icons.Material.Filled.ArrowBack : Icons.Material.Rounded.Menu;
+
+	MudTheme Theme = new MudTheme()
+	{
+		PaletteLight = new PaletteLight()
+		{
+			Primary = Colors.Green.Darken1,
+			Secondary = Colors.Green.Accent4,
+			AppbarBackground = Colors.Green.Darken2,
+			TextPrimary = Colors.Gray.Darken4,
+			TextSecondary = Colors.Gray.Darken3,
+		},
+		PaletteDark = new PaletteDark()
+		{
+			Primary = Colors.Green.Darken1,
+			Secondary = Colors.Green.Accent4,
+			AppbarBackground = Colors.Green.Darken2,
+			TextPrimary = Colors.Gray.Lighten3,
+			TextSecondary = Colors.Gray.Lighten2,
+		},
+
+		LayoutProperties = new LayoutProperties()
+		{
+			AppbarHeight = "80px",
+			DrawerWidthLeft = "260px",
+			DrawerWidthRight = "300px"
+		},
+	};
+}

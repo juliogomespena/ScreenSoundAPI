@@ -1,0 +1,27 @@
+﻿<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.subtitle2" Class="d-flex justify-center">
+            @DialogTitle
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudText Typo="Typo.overline" Class="d-flex justify-center">
+            @DialogContent
+        </MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Primary" OnClick="Submit" FullWidth="true">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; } = null!;
+
+    [Parameter]
+    public string? DialogTitle { get; set; }
+    [Parameter]
+    public string? DialogContent { get; set; }
+
+    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+}

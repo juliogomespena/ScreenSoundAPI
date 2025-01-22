@@ -1,0 +1,33 @@
+using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using ScreenSound.UI.Services;
+using ScreenSound.UI.Services.Interfaces;
+using MudBlazor.Services;
+using MudBlazor;
+
+namespace ScreenSound.UI
+{
+    public class Program
+    {
+        public static async Task Main(string[] args)
+        {
+            var builder = WebAssemblyHostBuilder.CreateDefault(args);
+            builder.RootComponents.Add<App>("#app");
+            builder.RootComponents.Add<HeadOutlet>("head::after");
+
+            builder.Services.AddScoped<IArtistaService, ArtistaService>();
+
+            builder.Services.AddMudServices();
+
+            builder.Services.AddHttpClient("API", client =>
+            {
+                client.BaseAddress = new Uri(builder.Configuration["APIServer:Url"]!);
+                client.DefaultRequestHeaders.Add("Accept", "application/json");
+            });
+
+            MudGlobal.UnhandledExceptionHandler = (exception) => Console.WriteLine(exception);
+
+            await builder.Build().RunAsync();
+        }
+    }
+}

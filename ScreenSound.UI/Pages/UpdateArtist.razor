@@ -1,0 +1,11 @@
+﻿@page "/artists/update/{ArtistName}"
+
+<MudText Typo="Typo.h3">Update artist</MudText>
+<MudDivider Class="pb-4"/>
+
+<ArtistForm ArtistAction="Update" ArtistName="@ArtistName"/>
+
+@code {
+	[Parameter]
+	public string? ArtistName { get; set; }
+}

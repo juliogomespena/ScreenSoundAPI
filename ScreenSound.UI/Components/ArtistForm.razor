@@ -1,0 +1,142 @@
+﻿@inject IDialogService Dialog
+@inject IArtistaService ArtistaService
+@inject NavigationManager NavigationManager
+
+<MudGrid>
+	<MudItem xs="12" md="12" xl="12">
+		<MudTextField T="string" @bind-Value="ArtistName" Label="Artist name" Typo="Typo.h6" Variant="Variant.Filled"></MudTextField>
+	</MudItem>
+
+	<MudItem xs="12" md="12" xl="12">
+		<MudTextField T="string" @bind-Value="ArtistBio" Label="Artist bio" Typo="Typo.overline" Variant="Variant.Filled" Lines="5"></MudTextField>
+	</MudItem>
+
+	<MudItem xs="12" md="12" xl="12">
+		<MudGrid Class="d-flex justify-end">
+			@if (_isLoading)
+			{
+				<MudItem>
+					<MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+				</MudItem>
+			}
+			<MudItem>
+				<MudButton Variant="Variant.Filled" Style="width: 100px; padding: 10px 20px;" Href="/artists">Back</MudButton>
+			</MudItem>
+
+			@if (ArtistAction == "Update")
+			{
+				<MudItem>
+						<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error" Style="width: 100px; padding: 10px 20px;" @onclick="DeleteOnClick" Disabled="@_isLoading">Delete</MudButton>
+				</MudItem>
+			}
+
+			<MudItem>
+				<MudButton Variant="Variant.Filled" Color="Color.Primary" Style="width: 100px; padding: 10px 20px;" @onclick="DetermineAction" Disabled="@_isLoading">@ArtistAction</MudButton>
+			</MudItem>
+		</MudGrid>
+	</MudItem>
+</MudGrid>
+
+@code {
+	[Parameter]
+	public string? ArtistAction { get; set; }
+	[Parameter]
+	public string? ArtistName { get; set; }
+	private string? ArtistBio { get; set; }
+	public ArtistGetModel? Artist { get; set; }
+	private bool _isLoading = false;
+
+	protected override async Task OnInitializedAsync()
+	{
+		if (ArtistAction == "Update" && !string.IsNullOrWhiteSpace(ArtistName))
+		{
+			Artist = await ArtistaService.FindByName(ArtistName);
+
+			if (Artist is null)
+			{
+				var parameters = new DialogParameters
+				{
+					{ "DialogTitle", "Loading error" },
+					{ "DialogContent", "Unable to find artist." }
+				};
+
+				var options = new DialogOptions
+				{
+					CloseOnEscapeKey = true
+				};
+
+				var dialog = await Dialog.ShowAsync<SimpleDialog>("Loading error", parameters, options);
+				await dialog.Result;
+
+				NavigationManager.NavigateTo("/artists");
+				return;
+			}
+
+			ArtistBio = Artist?.Bio;
+		}
+	}
+
+	private async void DetermineAction()
+	{
+		if (ArtistAction == "Add")
+			await AddOnClick();
+		else if (ArtistAction == "Update")
+			await UpdateOnClick();
+
+	}
+
+	private async Task AddOnClick()
+	{
+		if (string.IsNullOrWhiteSpace(ArtistName) || string.IsNullOrWhiteSpace(ArtistBio))
+		{
+			var parameters = new DialogParameters
+			{
+				{ "DialogTitle", "Input error" },
+				{ "DialogContent", "Please fill in all fields." }
+			};
+
+			var options = new DialogOptions
+				{
+					CloseOnEscapeKey = true
+				};
+
+			await Dialog.ShowAsync<SimpleDialog>("Input error", parameters, options);
+			return;
+		}
+
+		var artist = new ArtistPostModel(ArtistName, ArtistBio, "image_url");
+		_isLoading = true;
+		await ArtistaService.Add(artist);
+		_isLoading = false;
+		NavigationManager.NavigateTo("/artists");
+	}
+
+	private async Task UpdateOnClick()
+	{
+		if (string.IsNullOrWhiteSpace(ArtistName) || string.IsNullOrWhiteSpace(ArtistBio))
+		{
+			var parameters = new DialogParameters
+			{
+				{ "DialogTitle", "Input error" },
+				{ "DialogContent", "Please fill in all fields." }
+			};
+
+			var options = new DialogOptions
+				{
+					CloseOnEscapeKey = true
+				};
+
+			await Dialog.ShowAsync<SimpleDialog>("Input error", parameters, options);
+			return;
+		}
+
+		// var artist = new ArtistPutModel(ArtistName, ArtistBio, "image_url");
+		// await ArtistaService.Add(artist);
+		// NavigationManager.NavigateTo("/artists");
+	}
+
+	private async Task DeleteOnClick()
+	{
+		
+	}
+}
