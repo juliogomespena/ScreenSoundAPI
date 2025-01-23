@@ -1,0 +1,21 @@
+﻿<MudCard Class="fixed-card">
+	<MudCardMedia Image="@_profilePictureUrl" Height="200" />
+	<MudCardContent>
+		<MudGrid>
+			<MudItem xs="12">
+				<MudText Typo="Typo.h5" Class="pb-2">
+					@Artist.Name <MudIconButton Icon="@Icons.Material.Filled.Settings" Href="@($"/artists/update/{Artist.Name}")"/>
+				</MudText>
+				<MudText Typo="Typo.body2" Class="artist-bio-text">@Artist.Bio</MudText>
+			</MudItem>
+		</MudGrid>
+	</MudCardContent>
+</MudCard>
+
+@code {
+	[Parameter]
+	public ArtistGetModel Artist { get; set; } = null!;
+	private string? _profilePictureUrl;
+
+	protected override void OnInitialized() => _profilePictureUrl = Artist.ProfilePicture is null ? null : $"https://localhost:7059{Artist.ProfilePicture}";
+}

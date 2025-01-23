@@ -8,7 +8,14 @@
 <MudLayout>
 	<MudAppBar Color="Color.Primary">
 		<MudIconButton Icon="@menuIcon" Color="Color.Inherit" Edge="Edge.Start" @onclick="MenuToggle" />
-		<MudText Typo="Typo.h6">Screensound</MudText>
+		<MudGrid Class="d-flex justify-center align-center" Spacing="2">
+			<MudItem Class="d-flex">
+			<MudText Typo="Typo.h6">Screensound</MudText>
+			</MudItem>
+			<MudItem Class="d-flex">
+			<MudImage Src="images/logo.png" Style="max-height: 60px;"/>
+			</MudItem>
+		</MudGrid>
 	</MudAppBar>
 
 	<MudDrawer @bind-Open="@IsMenuOpen">

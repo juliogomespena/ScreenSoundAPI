@@ -3,16 +3,27 @@
 @inject NavigationManager NavigationManager
 
 <MudGrid>
-	<MudItem xs="12" md="12" xl="12">
-		<MudTextField T="string" @bind-Value="ArtistName" Label="Artist name" Typo="Typo.h6" Variant="Variant.Filled"></MudTextField>
+	<MudItem xs="12">
+		<MudTextField T="string" @bind-Value="ArtistName" Label="Artist name" Typo="Typo.h6" Variant="Variant.Filled" />
 	</MudItem>
 
-	<MudItem xs="12" md="12" xl="12">
-		<MudTextField T="string" @bind-Value="ArtistBio" Label="Artist bio" Typo="Typo.overline" Variant="Variant.Filled" Lines="5"></MudTextField>
+	<MudItem xs="12">
+		<MudTextField T="string" @bind-Value="_artistBio" Label="Artist bio" Typo="Typo.overline" Variant="Variant.Filled" Lines="5" />
 	</MudItem>
 
-	<MudItem xs="12" md="12" xl="12">
-		<MudGrid Class="d-flex justify-end">
+	<MudItem xs="12">
+		<MudImage Src="@_profilePictureFile" />
+		<MudFileUpload T="IBrowserFile" Accept=".jpeg, .jpg" FilesChanged="UploadFile">
+			<ActivatorContent>
+				<MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.CloudUpload">
+					Profile picture
+				</MudButton>
+			</ActivatorContent>
+		</MudFileUpload>
+	</MudItem>
+
+	<MudItem xs="12">
+		<MudGrid Class="d-flex justify-end" Spacing="3">
 			@if (_isLoading)
 			{
 				<MudItem>
@@ -26,7 +37,7 @@
 			@if (ArtistAction == "Update")
 			{
 				<MudItem>
-						<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error" Style="width: 100px; padding: 10px 20px;" @onclick="DeleteOnClick" Disabled="@_isLoading">Delete</MudButton>
+					<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error" Style="width: 100px; padding: 10px 20px;" @onclick="DeleteOnClick" Disabled="@_isLoading">Delete</MudButton>
 				</MudItem>
 			}
 
@@ -42,8 +53,12 @@
 	public string? ArtistAction { get; set; }
 	[Parameter]
 	public string? ArtistName { get; set; }
-	private string? ArtistBio { get; set; }
+
 	public ArtistGetModel? Artist { get; set; }
+
+	private string? _artistBio;
+	private string? _profilePicture;
+	private string? _profilePictureFile;
 	private bool _isLoading = false;
 
 	protected override async Task OnInitializedAsync()
@@ -61,9 +76,10 @@
 				};
 
 				var options = new DialogOptions
-				{
-					CloseOnEscapeKey = true
-				};
+					{
+						CloseOnEscapeKey = true,
+						MaxWidth = MaxWidth.ExtraSmall
+					};
 
 				var dialog = await Dialog.ShowAsync<SimpleDialog>("Loading error", parameters, options);
 				await dialog.Result;
@@ -72,7 +88,7 @@
 				return;
 			}
 
-			ArtistBio = Artist?.Bio;
+			_artistBio = Artist?.Bio;
 		}
 	}
 
@@ -87,7 +103,7 @@
 
 	private async Task AddOnClick()
 	{
-		if (string.IsNullOrWhiteSpace(ArtistName) || string.IsNullOrWhiteSpace(ArtistBio))
+		if (string.IsNullOrWhiteSpace(ArtistName) || string.IsNullOrWhiteSpace(_artistBio) || string.IsNullOrWhiteSpace(_profilePicture))
 		{
 			var parameters = new DialogParameters
 			{
@@ -97,14 +113,15 @@
 
 			var options = new DialogOptions
 				{
-					CloseOnEscapeKey = true
+					CloseOnEscapeKey = true,
+					MaxWidth = MaxWidth.ExtraSmall
 				};
 
 			await Dialog.ShowAsync<SimpleDialog>("Input error", parameters, options);
 			return;
 		}
 
-		var artist = new ArtistPostModel(ArtistName, ArtistBio, "image_url");
+		var artist = new ArtistPostModel(ArtistName, _artistBio, _profilePicture);
 		_isLoading = true;
 		await ArtistaService.Add(artist);
 		_isLoading = false;
@@ -113,7 +130,7 @@
 
 	private async Task UpdateOnClick()
 	{
-		if (string.IsNullOrWhiteSpace(ArtistName) || string.IsNullOrWhiteSpace(ArtistBio))
+		if (string.IsNullOrWhiteSpace(ArtistName) || string.IsNullOrWhiteSpace(_artistBio))
 		{
 			var parameters = new DialogParameters
 			{
@@ -123,20 +140,59 @@
 
 			var options = new DialogOptions
 				{
-					CloseOnEscapeKey = true
+					CloseOnEscapeKey = true,
+					MaxWidth = MaxWidth.ExtraSmall
 				};
 
 			await Dialog.ShowAsync<SimpleDialog>("Input error", parameters, options);
 			return;
 		}
 
-		// var artist = new ArtistPutModel(ArtistName, ArtistBio, "image_url");
-		// await ArtistaService.Add(artist);
-		// NavigationManager.NavigateTo("/artists");
+		var updatedProfilePicture = _profilePicture is null ? Artist!.ProfilePicture : _profilePicture;
+
+		var artist = new ArtistPutModel(Artist!.Id, ArtistName, _artistBio, updatedProfilePicture);
+		await ArtistaService.Update(artist);
+		NavigationManager.NavigateTo("/artists");
 	}
 
 	private async Task DeleteOnClick()
 	{
-		
+		var deleteDialogParameters = new DialogParameters<DeleteDialog>
+		{
+			{ x => x.ContentText, "Do you really want to delete the selected artist? This process cannot be undone." },
+			{ x => x.ButtonText, "Delete" },
+			{ x => x.Color, Color.Error }
+		};
+
+		var deletDialogOptions = new DialogOptions()
+			{
+				CloseButton = true,
+				MaxWidth = MaxWidth.ExtraSmall
+			};
+
+		var deleteDialog = await Dialog.ShowAsync<DeleteDialog>("Delete", deleteDialogParameters, deletDialogOptions);
+		var result = await deleteDialog.Result;
+
+		if (!result.Canceled)
+		{
+			await ArtistaService.Delete(Artist!);
+			NavigationManager.NavigateTo("/artists");
+		}
+	}
+
+	private async Task UploadFile(IBrowserFile file)
+	{
+		long maxFileSize = 1024 * 1024 * 15;
+		var format = "image/jpeg";
+		var resizedImage = await file.RequestImageFileAsync(format, 200, 200);
+
+		using var fileStream = resizedImage.OpenReadStream();
+		using var memoryStream = new MemoryStream();
+		await fileStream.CopyToAsync(memoryStream);
+
+		var imageBase64 = Convert.ToBase64String(memoryStream.ToArray());
+		_profilePictureFile = $"data:{format};base64,{imageBase64}";
+
+		_profilePicture = imageBase64;
 	}
 }

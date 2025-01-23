@@ -7,7 +7,7 @@ public class Artist(string name, string bio, string profilePicture = "= \"https:
     public int Id { get; set; }
     public string Name { get; set; } = name;
     public string Bio { get; set; } = bio;
-    public string ProfilePicture { get; set; } = profilePicture;
+    public string? ProfilePicture { get; set; } = profilePicture;
     public virtual ICollection<Music> Musics { get; set; } = new List<Music>();
 
     public void AddMusic(Music music)

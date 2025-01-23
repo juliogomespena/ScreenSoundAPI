@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 using ScreenSound.API.APIModels;
 using ScreenSound.Banco;
 using ScreenSound.Models.Models;
@@ -30,7 +31,7 @@ public static class ArtistsEndpoints
             return Results.Ok(artistGetModel);
         });
 
-        app.MapPost("/Artists", ([FromBody] ArtistPostModel artistPostModel, IRepository<Artist> artistRepository) =>
+        app.MapPost("/Artists", async ([FromServices]IHostEnvironment hostEnvironment, [FromBody] ArtistPostModel artistPostModel, IRepository<Artist> artistRepository) =>
         {
             if (string.IsNullOrEmpty(artistPostModel.Name))
                 return Results.BadRequest("Artist name cannot be null.");
@@ -39,13 +40,19 @@ public static class ArtistsEndpoints
             if (string.IsNullOrEmpty(artistPostModel.ProfilePicture))
                 return Results.BadRequest("Artist profile picture cannot be null.");
 
-            var artist = new Artist(artistPostModel.Name, artistPostModel.Bio, artistPostModel.ProfilePicture);
+            var profilePictureFileName = $"{DateTime.Now.ToString("ddMMyyyyHHmmss")}-{artistPostModel.Name.Trim()}.jpg";
+            var filePath = Path.Combine(hostEnvironment.ContentRootPath, "wwwroot", "images", "artistprofilepictures", profilePictureFileName);
+            using MemoryStream memoryStream = new(Convert.FromBase64String(artistPostModel.ProfilePicture));
+            using FileStream fileStream = new(filePath, FileMode.Create);
+            await memoryStream.CopyToAsync(fileStream);
+
+            var artist = new Artist(artistPostModel.Name, artistPostModel.Bio, $"/images/artistprofilepictures/{profilePictureFileName}");
 
             artistRepository.Add(artist);
             return Results.Ok();
         });
 
-        app.MapPut("/Artists", ([FromBody] ArtistPutModel artistPutModel, IRepository<Artist> artistRepository) =>
+        app.MapPut("/Artists", async ([FromServices]IHostEnvironment hostEnvironment, [FromBody] ArtistPutModel artistPutModel, IRepository<Artist> artistRepository) =>
         {
             if (artistPutModel.Id == 0)
                 return Results.BadRequest("Music id cannot be null.");
@@ -55,11 +62,22 @@ public static class ArtistsEndpoints
             if (artistFound is null)
                 return Results.NotFound();
 
-            artistFound.Name = string.IsNullOrEmpty(artistPutModel.Name) ? artistFound.Name : artistPutModel.Name;
-            artistFound.Bio = string.IsNullOrEmpty(artistPutModel.Bio) ? artistFound.Bio : artistPutModel.Bio;
-            artistFound.ProfilePicture = string.IsNullOrEmpty(artistPutModel.ProfilePicture) ? artistFound.ProfilePicture : artistPutModel.ProfilePicture;
+			var profilePictureFileName = $"{DateTime.Now.ToString("ddMMyyyyHHmmss")}-{artistFound.Name.Trim()}.jpg";
 
-            artistRepository.Update(artistFound);
+			if (!string.IsNullOrEmpty(artistPutModel.ProfilePicture))
+            {
+                var filePath = Path.Combine(hostEnvironment.ContentRootPath, "wwwroot", "images", "artistprofilepictures", profilePictureFileName);
+                using MemoryStream memoryStream = new(Convert.FromBase64String(artistPutModel.ProfilePicture));
+                using FileStream fileStream = new(filePath, FileMode.Create);
+                await memoryStream.CopyToAsync(fileStream);
+            }
+
+			artistFound.Name = string.IsNullOrEmpty(artistPutModel.Name) ? artistFound.Name : artistPutModel.Name;
+            artistFound.Bio = string.IsNullOrEmpty(artistPutModel.Bio) ? artistFound.Bio : artistPutModel.Bio;
+            artistFound.ProfilePicture = string.IsNullOrEmpty(artistPutModel.ProfilePicture) ? artistFound.ProfilePicture : $"/images/artistprofilepictures/{profilePictureFileName}";
+
+
+			artistRepository.Update(artistFound);
             return Results.Ok();
         });
 

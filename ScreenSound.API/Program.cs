@@ -46,17 +46,26 @@ public class Program
 
         var app = builder.Build();
 
-        ArtistsEndpoints.Add(app);
-        MusicsEndpoints.Add(app);
-        GenresEndpoints.Add(app);
-
-        if (app.Environment.IsDevelopment())
+		if (app.Environment.IsDevelopment())
+		{
+			app.UseSwagger();
+			app.UseSwaggerUI();
+		}
+        else
         {
-            app.UseSwagger();
-            app.UseSwaggerUI();
-        }
+			app.UseExceptionHandler("/Error");
+			app.UseHsts();
+		}
 
-        app.UseCors();
-        app.Run();
+		app.UseHttpsRedirection();
+		app.UseStaticFiles();
+
+		app.UseCors();
+
+		ArtistsEndpoints.Add(app);
+		MusicsEndpoints.Add(app);
+		GenresEndpoints.Add(app);
+
+		app.Run();
     }
 }

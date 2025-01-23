@@ -6,5 +6,5 @@ namespace ScreenSound.API.APIModels;
 public record GenrePostModel
 (
     string Name,
-    string Description
+    string? Description
 );

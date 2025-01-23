@@ -12,13 +12,9 @@ public static class MusicsEndpoints
         app.MapGet("/Musics", (IRepository<Music> musicRepository) =>
         {
             var musics = musicRepository.ListAll()
-            .Select(m => new MusicGetModel()
+            .Select(m => new MusicGetModel(m.Id, m.Name, m.ArtistId, m.Artist.Name)
             {
-                Id = m.Id,
-                Name = m.Name,
                 ReleaseYear = m.ReleaseYear,
-                ArtistId = m.ArtistId,
-                ArtistName = m.Artist.Name,
                 Genres = m.Genres?.Select(g => g.Name).ToList()
             }).ToList();
 
@@ -32,13 +28,9 @@ public static class MusicsEndpoints
             if (music is null)
                 return Results.NotFound("Music not found.");
 
-            var musicApiModel = new MusicGetModel()
+            var musicApiModel = new MusicGetModel(music.Id, music.Name, music.ArtistId, music.Artist.Name)
             {
-                Id = music.Id,
-                Name = music.Name,
                 ReleaseYear = music.ReleaseYear,
-                ArtistId = music.ArtistId,
-                ArtistName = music.Artist.Name,
                 Genres = music.Genres?.Select(g => g.Name).ToList()
             };
 
