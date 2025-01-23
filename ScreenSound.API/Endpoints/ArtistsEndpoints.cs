@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
-using ScreenSound.API.APIModels;
+using ScreenSound.Models.APIModels;
 using ScreenSound.Banco;
 using ScreenSound.Models.Models;
 

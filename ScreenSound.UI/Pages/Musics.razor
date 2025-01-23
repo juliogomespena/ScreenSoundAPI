@@ -1,12 +1,13 @@
-﻿@page "/artists"
-@inject IArtistService artistService
+﻿@page "/musics"
+@inject IMusicService musicService
+
 <MudStack Class="pb-2" Row="true" Justify="Justify.SpaceBetween">
-	<MudText Typo="Typo.h3" Class="d-flex justify-start">Artists</MudText>
+	<MudText Typo="Typo.h3" Class="d-flex justify-start">Musics</MudText>
 	<MudPagination Class="custom-pagination d-flex justify-end" Style="list-style:none;" Color="Color.Primary" Count="@totalPages" SelectedChanged="PageChanged" />
 </MudStack>
 <MudDivider Class="pb-4"/>
 
-@if (paginatedArtists is null)
+@if (paginatedMusics is null)
 {
 	<MudGrid>
 		<MudItem xs="12" Class="pa-10">
@@ -14,17 +15,17 @@
 		</MudItem>
 	</MudGrid>
 }
-else if (paginatedArtists.Count == 0)
+else if (paginatedMusics.Count == 0)
 {
-	<MudText Class="pa-2 Typo="Typo.h6">No artists found.</MudText>
+	<MudText Class="pa-2 Typo="Typo.h6">No musics found.</MudText>
 }
 else
 {
 	<MudGrid>
-		@foreach (var artist in paginatedArtists)
+		@foreach (var music in paginatedMusics)
 		{
 			<MudItem xs="12" sm="6" md="4" lg="3">
-				<ArtistCard Artist="artist"/>
+				<MusicCard Music="music"/>
 			</MudItem>
 		}
 	</MudGrid>
@@ -32,17 +33,17 @@ else
 
 @code
 {
-	private ICollection<ArtistGetModel>? artists;
+	private ICollection<MusicGetModel>? musics;
 	private int totalPages;
 	private int pageSize = 8;
-	private ICollection<ArtistGetModel>? paginatedArtists;
+	private ICollection<MusicGetModel>? paginatedMusics;
 
 	private void PageChanged(int currentPage)
 	{
-		if (artists is null)
+		if (musics is null)
 			return;
 
-		paginatedArtists = artists!
+		paginatedMusics = musics!
 			.OrderByDescending(a => a.Id)
 			.Skip((currentPage - 1) * pageSize)
 			.Take(pageSize)
@@ -51,11 +52,11 @@ else
 
 	protected override async Task OnInitializedAsync()
 	{
-		artists = await artistService.ListAllAsync();
+		musics = await musicService.ListAllAsync();
 
-		if (artists is not null)
+		if (musics is not null)
 		{
-			totalPages = Convert.ToInt32(Math.Ceiling((double)(artists.Count) / pageSize));
+			totalPages = Convert.ToInt32(Math.Ceiling((double)(musics.Count) / pageSize));
 			PageChanged(1);
 		}
 	}

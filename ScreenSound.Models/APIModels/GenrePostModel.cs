@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace ScreenSound.API.APIModels;
+namespace ScreenSound.Models.APIModels;
 
 [JsonSerializable(typeof(GenrePostModel))]
 public record GenrePostModel

@@ -1,4 +1,4 @@
-﻿using ScreenSound.API.APIModels;
+﻿using ScreenSound.Models.APIModels;
 using System.Text.Json.Serialization;
 
 namespace ScreenSound.Models;

@@ -1,0 +1,11 @@
+﻿@page "/musics/update/{MusicName}"
+
+<MudText Typo="Typo.h3" Class="pb-2">Update music</MudText>
+<MudDivider Class="pb-4"/>
+
+<MusicForm MusicAction="Update" MusicName="@MusicName" />
+
+@code {
+	[Parameter]
+	public string? MusicName { get; set; }
+}

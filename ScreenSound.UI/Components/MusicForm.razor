@@ -1,0 +1,200 @@
+﻿@inject IDialogService Dialog
+@inject IMusicService MusicService
+@inject IArtistService ArtistService
+@inject NavigationManager NavigationManager
+
+<MudGrid>
+	<MudItem xs="12">
+		<MudTextField @bind-Value="MusicName" Label="Music name" Typo="Typo.h6" Variant="Variant.Filled" />
+	</MudItem>
+
+	<MudItem xs="12">
+		<MudTextField @bind-Value="_artistName" Label="Artist name" Typo="Typo.h6" Variant="Variant.Filled" />
+	</MudItem>
+
+	<MudItem xs="12">
+		<MudTextField @bind-Value="_releaseYear" MaxLength="4" Counter="4" Label="Release year" Typo="Typo.h6" Variant="Variant.Filled" Immediate="true" />
+	</MudItem>
+
+
+	<MudItem xs="12">
+		<MudGrid Class="d-flex justify-end" Spacing="3">
+			@if (_isLoading)
+			{
+				<MudItem>
+					<MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+				</MudItem>
+			}
+			<MudItem>
+				<MudButton Variant="Variant.Filled" Style="width: 100px; padding: 10px 20px;" Href="/artists">Back</MudButton>
+			</MudItem>
+
+			@if (MusicAction == "Update")
+			{
+				<MudItem>
+					<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error" Style="width: 100px; padding: 10px 20px;" @onclick="DeleteOnClick" Disabled="@_isLoading">Delete</MudButton>
+				</MudItem>
+			}
+
+			<MudItem>
+				<MudButton Variant="Variant.Filled" Color="Color.Primary" Style="width: 100px; padding: 10px 20px;" @onclick="DetermineAction" Disabled="@_isLoading">@MusicAction</MudButton>
+			</MudItem>
+		</MudGrid>
+	</MudItem>
+</MudGrid>
+
+@code {
+	[Parameter]
+	public string? MusicAction { get; set; }
+	[Parameter]
+	public string? MusicName { get; set; }
+
+	private MusicGetModel? _music;
+	private ArtistGetModel? _artist;
+	private string? _artistName;
+	private int? _releaseYear;
+	private bool _isLoading = false;
+
+	protected override async Task OnInitializedAsync() 
+	{
+		if (MusicAction == "Update" && !string.IsNullOrWhiteSpace(MusicName))
+		{
+			_music = await MusicService.FindByName(MusicName);
+
+			if (_music is null)
+			{
+				var parameters = new DialogParameters
+				{
+					{ "DialogTitle", "Loading error" },
+					{ "DialogContent", "Unable to find music." }
+				};
+
+				var options = new DialogOptions
+					{
+						CloseOnEscapeKey = true,
+						MaxWidth = MaxWidth.ExtraSmall
+					};
+
+				var dialog = await Dialog.ShowAsync<SimpleDialog>("Loading error", parameters, options);
+				await dialog.Result;
+
+				NavigationManager.NavigateTo("/musics");
+				return;
+			}
+
+			_artist = await ArtistService.FindByName(_music.ArtistName);
+
+			if (_artist is null)
+			{
+				var parameters = new DialogParameters
+				{
+					{ "DialogTitle", "Loading error" },
+					{ "DialogContent", "Unable to find artist." }
+				};
+
+				var options = new DialogOptions
+					{
+						CloseOnEscapeKey = true,
+						MaxWidth = MaxWidth.ExtraSmall
+					};
+
+				var dialog = await Dialog.ShowAsync<SimpleDialog>("Loading error", parameters, options);
+				await dialog.Result;
+
+				NavigationManager.NavigateTo("/musics");
+				return;
+			}
+
+			_artistName = _music.ArtistName;
+			_releaseYear = _music.ReleaseYear;
+		}
+	}
+
+	private async void DetermineAction()
+	{
+		// if (MusicAction == "Add")
+		// 	await AddOnClick();
+		// else if (MusicAction == "Update")
+		// 	await UpdateOnClick();
+
+	}
+
+	// private async Task AddOnClick()
+	// {
+	// 	if (string.IsNullOrWhiteSpace(ArtistName) || string.IsNullOrWhiteSpace(_artistBio) || string.IsNullOrWhiteSpace(_profilePicture))
+	// 	{
+	// 		var parameters = new DialogParameters
+	// 		{
+	// 			{ "DialogTitle", "Input error" },
+	// 			{ "DialogContent", "Please fill in all fields." }
+	// 		};
+
+	// 		var options = new DialogOptions
+	// 			{
+	// 				CloseOnEscapeKey = true,
+	// 				MaxWidth = MaxWidth.ExtraSmall
+	// 			};
+
+	// 		await Dialog.ShowAsync<SimpleDialog>("Input error", parameters, options);
+	// 		return;
+	// 	}
+
+	// 	var artist = new ArtistPostModel(ArtistName, _artistBio, _profilePicture);
+	// 	_isLoading = true;
+	// 	await ArtistaService.Add(artist);
+	// 	_isLoading = false;
+	// 	NavigationManager.NavigateTo("/artists");
+	// }
+
+	// private async Task UpdateOnClick()
+	// {
+	// 	if (string.IsNullOrWhiteSpace(ArtistName) || string.IsNullOrWhiteSpace(_artistBio))
+	// 	{
+	// 		var parameters = new DialogParameters
+	// 		{
+	// 			{ "DialogTitle", "Input error" },
+	// 			{ "DialogContent", "Please fill in all fields." }
+	// 		};
+
+	// 		var options = new DialogOptions
+	// 			{
+	// 				CloseOnEscapeKey = true,
+	// 				MaxWidth = MaxWidth.ExtraSmall
+	// 			};
+
+	// 		await Dialog.ShowAsync<SimpleDialog>("Input error", parameters, options);
+	// 		return;
+	// 	}
+
+	// 	var updatedProfilePicture = _profilePicture is null ? Artist!.ProfilePicture : _profilePicture;
+
+	// 	var artist = new ArtistPutModel(Artist!.Id, ArtistName, _artistBio, updatedProfilePicture);
+	// 	await ArtistaService.Update(artist);
+	// 	NavigationManager.NavigateTo("/artists");
+	// }
+
+	private async Task DeleteOnClick()
+	{
+		var deleteDialogParameters = new DialogParameters<DeleteDialog>
+		{
+			{ x => x.ContentText, "Do you really want to delete the selected music? This process cannot be undone." },
+			{ x => x.ButtonText, "Delete" },
+			{ x => x.Color, Color.Error }
+		};
+
+		var deletDialogOptions = new DialogOptions()
+			{
+				CloseButton = true,
+				MaxWidth = MaxWidth.ExtraSmall
+			};
+
+		var deleteDialog = await Dialog.ShowAsync<DeleteDialog>("Delete", deleteDialogParameters, deletDialogOptions);
+		var result = await deleteDialog.Result;
+
+		if (!result!.Canceled)
+		{
+			await MusicService.Delete(_music!);
+			NavigationManager.NavigateTo("/musics");
+		}
+	}
+}

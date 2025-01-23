@@ -7,7 +7,7 @@ using MudBlazor;
 
 namespace ScreenSound.UI
 {
-    public class Program
+	public class Program
     {
         public static async Task Main(string[] args)
         {
@@ -15,9 +15,11 @@ namespace ScreenSound.UI
             builder.RootComponents.Add<App>("#app");
             builder.RootComponents.Add<HeadOutlet>("head::after");
 
-            builder.Services.AddScoped<IArtistaService, ArtistaService>();
+            builder.Services.AddScoped<IArtistService, ArtistService>();
+			builder.Services.AddScoped<IMusicService, MusicService>();
+			builder.Services.AddScoped<IGenreService, GenreService>();
 
-            builder.Services.AddMudServices();
+			builder.Services.AddMudServices();
 
             builder.Services.AddHttpClient("API", client =>
             {

@@ -1,0 +1,30 @@
+﻿<MudCard Class="fixed-card">
+	<MudCardMedia Image="" Height="200" />
+
+	<MudCardHeader>
+		<CardHeaderContent>
+			<MudText Typo="Typo.h6">
+				@Music.Name (@Music.ReleaseYear) <MudIconButton Icon="@Icons.Material.Filled.Settings" Href="@($"/musics/update/{Music.Name}")" />
+			</MudText>
+		</CardHeaderContent>
+	</MudCardHeader>
+	<MudCardContent>
+		<MudGrid>
+			<MudItem xs="12">
+				<MudText Typo="Typo.body2" Class="music-card-text">Artist: @Music.ArtistName</MudText>
+				<MudText Typo="Typo.caption" Class="music-card-text">Genre: @_musicGenres</MudText>
+				</MudItem>
+			</MudGrid>
+		</MudCardContent>
+	</MudCard>
+
+	@code {
+	[Parameter]
+	public MusicGetModel Music { get; set; } = null!;
+	private string? _musicGenres;
+
+	protected override void OnInitialized()
+	{
+			_musicGenres = Music.Genres is not null ? string.Join(", ", Music.Genres) : null;
+	}
+}

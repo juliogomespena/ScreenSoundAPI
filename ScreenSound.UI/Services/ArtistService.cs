@@ -1,15 +1,15 @@
-﻿using ScreenSound.API.APIModels;
+﻿using ScreenSound.Models.APIModels;
 using ScreenSound.UI.Services.Interfaces;
 using System.Net.Http;
 using System.Net.Http.Json;
 
 namespace ScreenSound.UI.Services;
 
-public class ArtistaService(IHttpClientFactory httpClientFactory) : IArtistaService
+public class ArtistService(IHttpClientFactory httpClientFactory) : IArtistService
 {
     private readonly HttpClient _httpClient = httpClientFactory.CreateClient("API");
 
-    public async Task<ICollection<ArtistGetModel>?> ListAllArtistsAsync() => await _httpClient.GetFromJsonAsync<ICollection<ArtistGetModel>>("Artists");
+    public async Task<ICollection<ArtistGetModel>?> ListAllAsync() => await _httpClient.GetFromJsonAsync<ICollection<ArtistGetModel>>("Artists");
 
     public async Task Add(ArtistPostModel artist) => await _httpClient.PostAsJsonAsync("Artists", artist);
 

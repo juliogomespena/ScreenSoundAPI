@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ScreenSound.API.APIModels;
+using ScreenSound.Models.APIModels;
 using ScreenSound.Banco;
 using ScreenSound.Models.Models;
 

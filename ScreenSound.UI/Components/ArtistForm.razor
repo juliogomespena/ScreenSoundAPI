@@ -1,5 +1,5 @@
 ﻿@inject IDialogService Dialog
-@inject IArtistaService ArtistaService
+@inject IArtistService ArtistService
 @inject NavigationManager NavigationManager
 
 <MudGrid>
@@ -65,7 +65,7 @@
 	{
 		if (ArtistAction == "Update" && !string.IsNullOrWhiteSpace(ArtistName))
 		{
-			Artist = await ArtistaService.FindByName(ArtistName);
+			Artist = await ArtistService.FindByName(ArtistName);
 
 			if (Artist is null)
 			{
@@ -123,7 +123,7 @@
 
 		var artist = new ArtistPostModel(ArtistName, _artistBio, _profilePicture);
 		_isLoading = true;
-		await ArtistaService.Add(artist);
+		await ArtistService.Add(artist);
 		_isLoading = false;
 		NavigationManager.NavigateTo("/artists");
 	}
@@ -151,7 +151,7 @@
 		var updatedProfilePicture = _profilePicture is null ? Artist!.ProfilePicture : _profilePicture;
 
 		var artist = new ArtistPutModel(Artist!.Id, ArtistName, _artistBio, updatedProfilePicture);
-		await ArtistaService.Update(artist);
+		await ArtistService.Update(artist);
 		NavigationManager.NavigateTo("/artists");
 	}
 
@@ -173,16 +173,15 @@
 		var deleteDialog = await Dialog.ShowAsync<DeleteDialog>("Delete", deleteDialogParameters, deletDialogOptions);
 		var result = await deleteDialog.Result;
 
-		if (!result.Canceled)
+		if (!result!.Canceled)
 		{
-			await ArtistaService.Delete(Artist!);
+			await ArtistService.Delete(Artist!);
 			NavigationManager.NavigateTo("/artists");
 		}
 	}
 
 	private async Task UploadFile(IBrowserFile file)
 	{
-		long maxFileSize = 1024 * 1024 * 15;
 		var format = "image/jpeg";
 		var resizedImage = await file.RequestImageFileAsync(format, 200, 200);
 

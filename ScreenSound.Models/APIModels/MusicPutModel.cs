@@ -1,7 +1,7 @@
 ﻿using ScreenSound.Models;
 using System.Text.Json.Serialization;
 
-namespace ScreenSound.API.APIModels;
+namespace ScreenSound.Models.APIModels;
 
 [JsonSerializable(typeof(MusicPutModel))]
 public record MusicPutModel
