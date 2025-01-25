@@ -22,5 +22,9 @@ public class MusicService(IHttpClientFactory httpClientFactory) : IMusicService
 		return null;
 	}
 
+	public async Task Add(MusicPostModel music) => await _httpClient.PostAsJsonAsync("Musics", music);
+
+	public async Task Update(MusicPutModel music) => await _httpClient.PutAsJsonAsync("Musics", music);
+
 	public async Task Delete(MusicGetModel music) => await _httpClient.DeleteAsync($"Musics/{music.Id}");
 }

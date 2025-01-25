@@ -65,6 +65,7 @@
 	{
 		if (ArtistAction == "Update" && !string.IsNullOrWhiteSpace(ArtistName))
 		{
+			_isLoading = true;
 			Artist = await ArtistService.FindByName(ArtistName);
 
 			if (Artist is null)
@@ -89,6 +90,7 @@
 			}
 
 			_artistBio = Artist?.Bio;
+			_isLoading = false; ;
 		}
 	}
 
@@ -103,6 +105,7 @@
 
 	private async Task AddOnClick()
 	{
+		_isLoading = true;
 		if (string.IsNullOrWhiteSpace(ArtistName) || string.IsNullOrWhiteSpace(_artistBio) || string.IsNullOrWhiteSpace(_profilePicture))
 		{
 			var parameters = new DialogParameters
@@ -118,11 +121,11 @@
 				};
 
 			await Dialog.ShowAsync<SimpleDialog>("Input error", parameters, options);
+			_isLoading = false;
 			return;
 		}
 
 		var artist = new ArtistPostModel(ArtistName, _artistBio, _profilePicture);
-		_isLoading = true;
 		await ArtistService.Add(artist);
 		_isLoading = false;
 		NavigationManager.NavigateTo("/artists");
@@ -130,6 +133,7 @@
 
 	private async Task UpdateOnClick()
 	{
+		_isLoading = true;
 		if (string.IsNullOrWhiteSpace(ArtistName) || string.IsNullOrWhiteSpace(_artistBio))
 		{
 			var parameters = new DialogParameters
@@ -145,6 +149,7 @@
 				};
 
 			await Dialog.ShowAsync<SimpleDialog>("Input error", parameters, options);
+			_isLoading = false;
 			return;
 		}
 
@@ -152,6 +157,7 @@
 
 		var artist = new ArtistPutModel(Artist!.Id, ArtistName, _artistBio, updatedProfilePicture);
 		await ArtistService.Update(artist);
+		_isLoading = false;
 		NavigationManager.NavigateTo("/artists");
 	}
 
