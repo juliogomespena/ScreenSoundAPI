@@ -9,7 +9,9 @@ public static class MusicsEndpoints
 {
     public static void Add(this WebApplication app)
     {
-        app.MapGet("/Musics", (IRepository<Music> musicRepository) =>
+        var group = app.MapGroup("Musics").RequireAuthorization().WithTags("Musics");
+
+		group.MapGet("/", (IRepository<Music> musicRepository) =>
         {
             var musics = musicRepository.ListAll()
             .Select(m => new MusicGetModel(m.Id, m.Name, m.ArtistId, m.Artist.Name)
@@ -21,7 +23,7 @@ public static class MusicsEndpoints
             return Results.Ok(musics);
         });
 
-        app.MapGet("/Musics/{name}", (string name, IRepository<Music> musicRepository) =>
+        group.MapGet("/{name}", (string name, IRepository<Music> musicRepository) =>
         {
             var music = musicRepository.FindByParameter(m => m.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
 
@@ -37,7 +39,7 @@ public static class MusicsEndpoints
             return Results.Ok(musicApiModel);
         });
 
-        app.MapPost("/Musics", ([FromBody] MusicPostModel musicPostModel, IRepository<Music> musicRepository, IRepository<Genre> genreRepository) =>
+        group.MapPost("/", ([FromBody] MusicPostModel musicPostModel, IRepository<Music> musicRepository, IRepository<Genre> genreRepository) =>
         {
             if (string.IsNullOrEmpty(musicPostModel.Name))
                 return Results.BadRequest("Music name cannot be null or empty.");
@@ -60,7 +62,7 @@ public static class MusicsEndpoints
             return Results.Ok();
         });
 
-        app.MapPut("/Musics", ([FromBody] MusicPutModel musicPutModel, IRepository<Music> musicRepository, IRepository<Genre> genreRepository) =>
+        group.MapPut("/", ([FromBody] MusicPutModel musicPutModel, IRepository<Music> musicRepository, IRepository<Genre> genreRepository) =>
         {
             if (musicPutModel.Id == 0)
                 return Results.BadRequest("Music id cannot be null.");
@@ -84,7 +86,7 @@ public static class MusicsEndpoints
             return Results.Ok();
         });
 
-        app.MapDelete("/Musics/{id}", (int id, IRepository<Music> musicRepository) =>
+        group.MapDelete("/{id}", (int id, IRepository<Music> musicRepository) =>
         {
             var music = musicRepository.FindByParameter(m => m.Id == id);
 

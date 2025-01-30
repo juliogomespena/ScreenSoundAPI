@@ -1,5 +1,6 @@
 ﻿@page "/artists"
 @inject IArtistService artistService
+
 <MudStack Class="pb-2" Row="true" Justify="Justify.SpaceBetween">
 	<MudText Typo="Typo.h3" Class="d-flex justify-start">Artists</MudText>
 	<MudPagination Class="custom-pagination d-flex justify-end" Style="list-style:none;" Color="Color.Primary" Count="@totalPages" SelectedChanged="PageChanged" />

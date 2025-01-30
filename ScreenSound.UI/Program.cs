@@ -4,6 +4,8 @@ using ScreenSound.UI.Services;
 using ScreenSound.UI.Services.Interfaces;
 using MudBlazor.Services;
 using MudBlazor;
+using ScreenSound.UI.Handlers;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace ScreenSound.UI
 {
@@ -15,17 +17,24 @@ namespace ScreenSound.UI
             builder.RootComponents.Add<App>("#app");
             builder.RootComponents.Add<HeadOutlet>("head::after");
 
-            builder.Services.AddScoped<IArtistService, ArtistService>();
+			builder.Services.AddMudServices();
+
+			builder.Services.AddAuthorizationCore();
+			builder.Services.AddScoped<IAuthService, AuthService>(sp => 
+                (AuthService)sp.GetRequiredService<AuthenticationStateProvider>());
+			builder.Services.AddScoped<AuthenticationStateProvider, AuthService>();
+
+			builder.Services.AddScoped<CookieHandler>();
+
+			builder.Services.AddScoped<IArtistService, ArtistService>();
 			builder.Services.AddScoped<IMusicService, MusicService>();
 			builder.Services.AddScoped<IGenreService, GenreService>();
-
-			builder.Services.AddMudServices();
 
             builder.Services.AddHttpClient("API", client =>
             {
                 client.BaseAddress = new Uri(builder.Configuration["APIServer:Url"]!);
                 client.DefaultRequestHeaders.Add("Accept", "application/json");
-            });
+            }).AddHttpMessageHandler<CookieHandler>();
 
             MudGlobal.UnhandledExceptionHandler = (exception) => Console.WriteLine(exception);
 

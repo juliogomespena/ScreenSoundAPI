@@ -74,6 +74,7 @@
 	protected override async Task OnInitializedAsync() 
 	{
 		_isLoading = true;
+		StateHasChanged();
 
 		_genres = (await GenreService.ListAllAsync())?
 			.Select(g => g.Name).ToList();
@@ -98,6 +99,7 @@
 			_selectedGenres = _music.Genres;
 		}
 		_isLoading = false;
+		StateHasChanged();
 	}
 
 	private async Task DetermineAction()
@@ -112,6 +114,7 @@
 	private async Task AddOnClick()
 	{
 		_isLoading = true;
+		StateHasChanged();
 		if (string.IsNullOrWhiteSpace(MusicName) || string.IsNullOrWhiteSpace(_artistName) || _releaseYear is null || _selectedGenres is null)
 		{
 			var parameters = new DialogParameters
@@ -128,6 +131,7 @@
 
 			await Dialog.ShowAsync<SimpleDialog>("Input error", parameters, options);
 			_isLoading = false;
+			StateHasChanged();
 			return;
 		}
 
@@ -139,12 +143,14 @@
 		var music = new MusicPostModel(MusicName, (int)_releaseYear, _artist!.Id, _selectedGenres.ToList());
 		await MusicService.Add(music);
 		_isLoading = false;
+		StateHasChanged();
 		NavigationManager.NavigateTo("/musics");
 	}
 
 	private async Task UpdateOnClick()
 	{
 		_isLoading = true;
+		StateHasChanged();
 		if (string.IsNullOrWhiteSpace(MusicName) || string.IsNullOrWhiteSpace(_artistName) || _releaseYear is null || _selectedGenres is null)
 		{
 			var parameters = new DialogParameters
@@ -161,6 +167,7 @@
 
 			await Dialog.ShowAsync<SimpleDialog>("Input error", parameters, options);
 			_isLoading = false;
+			StateHasChanged();
 			return;
 		}
 
@@ -172,12 +179,14 @@
 		var music = new MusicPutModel(_music!.Id, _artist!.Id, MusicName, _releaseYear, _selectedGenres.ToList());
 		await MusicService.Update(music);
 		_isLoading = false;
+		StateHasChanged();
 		NavigationManager.NavigateTo("/musics");
 	}
 
 	private async Task DeleteOnClick()
 	{
 		_isLoading = true;
+		StateHasChanged();
 		var deleteDialogParameters = new DialogParameters<DeleteDialog>
 		{
 			{ x => x.ContentText, "Do you really want to delete the selected music? This process cannot be undone." },
@@ -200,5 +209,6 @@
 			NavigationManager.NavigateTo("/musics");
 		}
 		_isLoading = false;
+		StateHasChanged();
 	}
 }

@@ -31,7 +31,7 @@
 				</MudItem>
 			}
 			<MudItem>
-				<MudButton Variant="Variant.Filled" Style="width: 100px; padding: 10px 20px;" Href="/artists">Back</MudButton>
+				<MudButton Variant="Variant.Filled" Style="width: 100px; padding: 10px 20px;" Href="artists">Back</MudButton>
 			</MudItem>
 
 			@if (ArtistAction == "Update")
@@ -66,6 +66,7 @@
 		if (ArtistAction == "Update" && !string.IsNullOrWhiteSpace(ArtistName))
 		{
 			_isLoading = true;
+			StateHasChanged();
 			Artist = await ArtistService.FindByName(ArtistName);
 
 			if (Artist is null)
@@ -90,7 +91,8 @@
 			}
 
 			_artistBio = Artist?.Bio;
-			_isLoading = false; ;
+			_isLoading = false;
+			StateHasChanged();
 		}
 	}
 
@@ -106,6 +108,7 @@
 	private async Task AddOnClick()
 	{
 		_isLoading = true;
+		StateHasChanged();
 		if (string.IsNullOrWhiteSpace(ArtistName) || string.IsNullOrWhiteSpace(_artistBio) || string.IsNullOrWhiteSpace(_profilePicture))
 		{
 			var parameters = new DialogParameters
@@ -122,18 +125,21 @@
 
 			await Dialog.ShowAsync<SimpleDialog>("Input error", parameters, options);
 			_isLoading = false;
+			StateHasChanged();
 			return;
 		}
 
 		var artist = new ArtistPostModel(ArtistName, _artistBio, _profilePicture);
 		await ArtistService.Add(artist);
 		_isLoading = false;
+		StateHasChanged();
 		NavigationManager.NavigateTo("/artists");
 	}
 
 	private async Task UpdateOnClick()
 	{
 		_isLoading = true;
+		StateHasChanged();
 		if (string.IsNullOrWhiteSpace(ArtistName) || string.IsNullOrWhiteSpace(_artistBio))
 		{
 			var parameters = new DialogParameters
@@ -150,6 +156,7 @@
 
 			await Dialog.ShowAsync<SimpleDialog>("Input error", parameters, options);
 			_isLoading = false;
+			StateHasChanged();
 			return;
 		}
 
@@ -158,6 +165,7 @@
 		var artist = new ArtistPutModel(Artist!.Id, ArtistName, _artistBio, updatedProfilePicture);
 		await ArtistService.Update(artist);
 		_isLoading = false;
+		StateHasChanged();
 		NavigationManager.NavigateTo("/artists");
 	}
 

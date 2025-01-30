@@ -1,0 +1,20 @@
+﻿@page "/login"
+@attribute [AllowAnonymous]
+
+<Microsoft.AspNetCore.Components.Authorization.AuthorizeView>
+	<Authorized>
+		<MudText Typo="Typo.h3" Class="pb-2">Welcome</MudText>
+		<MudDivider Class="pb-4" />
+		<MudText Typo="Typo.h6">You're conected as @context.User.Identity.Name</MudText>
+	</Authorized>
+	<NotAuthorized>
+		<MudText Typo="Typo.h3" Class="pb-2">Login</MudText>
+		<MudDivider Class="pb-4" />
+		<LoginForm ReturnUrl="@ReturnUrl" />
+	</NotAuthorized>
+</Microsoft.AspNetCore.Components.Authorization.AuthorizeView>
+
+@code {
+	[SupplyParameterFromQuery]
+	public string? ReturnUrl { get; set; }
+}

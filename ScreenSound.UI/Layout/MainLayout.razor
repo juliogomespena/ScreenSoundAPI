@@ -6,19 +6,37 @@
 <MudSnackbarProvider />
 
 <MudLayout>
-	<MudAppBar Color="Color.Primary">
+	<MudAppBar Color="Color.Primary" Elevation="1">
+
 		<MudIconButton Icon="@menuIcon" Color="Color.Inherit" Edge="Edge.Start" @onclick="MenuToggle" />
-		<MudGrid Class="d-flex justify-center align-center" Spacing="2">
-			<MudItem Class="d-flex">
-			<MudText Typo="Typo.h6">Screensound</MudText>
+
+		<MudGrid Spacing="2" Justify="Justify.SpaceBetween">
+
+			<MudItem xs="4" />
+
+			<MudItem xs="4" Class="d-flex justify-center align-center">
+				<MudText Typo="Typo.h6">Screensound</MudText>
+				<MudImage Src="images/logo.png" Style="max-height: 60px;"/>
 			</MudItem>
-			<MudItem Class="d-flex">
-			<MudImage Src="images/logo.png" Style="max-height: 60px;"/>
+
+			<MudItem xs="4" Class="d-flex justify-end align-center">
+				<Microsoft.AspNetCore.Components.Authorization.AuthorizeView>
+					<NotAuthorized>
+						<MudButton Variant="Variant.Filled" Href="login" Color="Color.Dark">Login</MudButton>
+					</NotAuthorized>
+					<Authorized>
+						<MudAvatar>
+							<MudIcon Icon="@Icons.Material.Filled.Person" Color="Color.Dark"/>
+						</MudAvatar>
+						<MudButton Class="ml-4" Variant="Variant.Filled" Href="logout" Color="Color.Dark">Logout</MudButton>
+					</Authorized>
+				</Microsoft.AspNetCore.Components.Authorization.AuthorizeView>
 			</MudItem>
+
 		</MudGrid>
 	</MudAppBar>
 
-	<MudDrawer @bind-Open="@IsMenuOpen">
+	<MudDrawer @bind-Open="@IsMenuOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
 		<NavMenu />
 	</MudDrawer>
 

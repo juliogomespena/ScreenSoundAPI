@@ -1,0 +1,77 @@
+﻿@inject IAuthService AuthService
+@inject IDialogService Dialog
+@inject NavigationManager Navigation
+
+<MudGrid>
+	<MudItem xs="12">
+		<MudTextField T="string" @bind-Value="_user" Label="User" Typo="Typo.h6" Variant="Variant.Filled" />
+	</MudItem>
+
+	<MudItem xs="12">
+		<MudTextField T="string" @bind-Value="_password" Label="Password" Typo="Typo.h6" Variant="Variant.Filled" InputType="InputType.Password"/>
+	</MudItem>
+
+	<MudItem xs="12">
+		<MudGrid Class="d-flex justify-end" Spacing="3">
+			@if (_isLoading)
+			{
+				<MudItem>
+					<MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+				</MudItem>
+			}
+			<MudItem>
+				<MudButton Variant="Variant.Filled" Style="width: 100px; padding: 10px 20px;" Href="/">Back</MudButton>
+			</MudItem>
+
+			<MudItem>
+				<MudButton Variant="Variant.Filled" Color="Color.Primary" Style="width: 100px; padding: 10px 20px;" @onclick="LoginClick" Disabled="@_isLoading">Enter</MudButton>
+			</MudItem>
+		</MudGrid>
+	</MudItem>
+</MudGrid>
+
+@code 
+{
+	private string? _user;
+	private string? _password;
+	private bool _isLoading = false;
+
+	[Parameter]
+	public string? ReturnUrl { get; set; }
+
+	private async void LoginClick()
+	{
+		_isLoading = true;
+		StateHasChanged();
+
+		if (string.IsNullOrWhiteSpace(_user) || string.IsNullOrWhiteSpace(_password))
+		{
+			var parameters = new DialogParameters
+				{
+					{ "DialogTitle", "Input error" },
+					{ "DialogContent", "Please fill in user and password." }
+				};
+
+			var options = new DialogOptions
+				{
+					CloseOnEscapeKey = true,
+					MaxWidth = MaxWidth.ExtraSmall
+				};
+
+			var dialog = await Dialog.ShowAsync<SimpleDialog>("Input error", parameters, options);
+			await dialog.Result;
+
+			_isLoading = false;
+			StateHasChanged();
+			return;
+		}
+
+		var response = await AuthService.LoginAsync(_user, _password);
+		_isLoading = false;
+		StateHasChanged();
+
+		if (response.Success)
+			if (ReturnUrl is not null)
+				Navigation.NavigateTo(ReturnUrl);
+	}
+}

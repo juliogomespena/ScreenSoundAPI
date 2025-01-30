@@ -10,7 +10,9 @@ public static class ArtistsEndpoints
 {
     public static void Add(this WebApplication app)
     {
-        app.MapGet("/Artists", (IRepository<Artist> artistRepository) =>
+        var group = app.MapGroup("Artists").RequireAuthorization().WithTags("Artists");
+
+        group.MapGet("/", (IRepository<Artist> artistRepository) =>
             {
                 var artists = artistRepository.ListAll()
                 .Select(a => new ArtistGetModel(a.Id, a.Name, a.Bio, a.ProfilePicture, a.Musics.Select(m => m.Name).ToList()))
@@ -19,7 +21,7 @@ public static class ArtistsEndpoints
                 return Results.Ok(artists);
             });
 
-        app.MapGet("/Artists/{name}", (string name, IRepository<Artist> artistRepository) =>
+		group.MapGet("/{name}", (string name, IRepository<Artist> artistRepository) =>
         {
             var artist = artistRepository.FindByParameter(a => a.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
 
@@ -31,7 +33,7 @@ public static class ArtistsEndpoints
             return Results.Ok(artistGetModel);
         });
 
-        app.MapPost("/Artists", async ([FromServices]IHostEnvironment hostEnvironment, [FromBody] ArtistPostModel artistPostModel, IRepository<Artist> artistRepository) =>
+        group.MapPost("/", async ([FromServices]IHostEnvironment hostEnvironment, [FromBody] ArtistPostModel artistPostModel, IRepository<Artist> artistRepository) =>
         {
             if (string.IsNullOrEmpty(artistPostModel.Name))
                 return Results.BadRequest("Artist name cannot be null.");
@@ -52,7 +54,7 @@ public static class ArtistsEndpoints
             return Results.Ok();
         });
 
-        app.MapPut("/Artists", async ([FromServices]IHostEnvironment hostEnvironment, [FromBody] ArtistPutModel artistPutModel, IRepository<Artist> artistRepository) =>
+        group.MapPut("/", async ([FromServices]IHostEnvironment hostEnvironment, [FromBody] ArtistPutModel artistPutModel, IRepository<Artist> artistRepository) =>
         {
             if (artistPutModel.Id == 0)
                 return Results.BadRequest("Music id cannot be null.");
@@ -81,7 +83,7 @@ public static class ArtistsEndpoints
             return Results.Ok();
         });
 
-        app.MapDelete("/Artists/{id}", (int id, IRepository<Artist> artistRepository) =>
+        group.MapDelete("/{id}", (int id, IRepository<Artist> artistRepository) =>
         {
             var artist = artistRepository.FindByParameter(a => a.Id == id);
 

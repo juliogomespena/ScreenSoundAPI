@@ -1,14 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using ScreenSound.Models.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ScreenSound.Banco;
 
-public class ScreenSoundEfContext : DbContext
+public class ScreenSoundEfContext : IdentityDbContext<User, AcessProfile, int>
 {
     public ScreenSoundEfContext(DbContextOptions options) : base(options) { }
 
@@ -26,6 +22,8 @@ public class ScreenSoundEfContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+
         modelBuilder.Entity<Genre>()
             .HasMany(m => m.Musics)
             .WithMany(g => g.Genres);
